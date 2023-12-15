@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Stock Data</title>
+    <!-- Other head elements -->
+</head>
+<body>
+    <h1>Stock Data</h1>
+    <div>Open: <span id="open">-</span></div>
+    <div>Low: <span id="low">-</span></div>
+    <div>High: <span id="high">-</span></div>
+    <div>Close: <span id="close">-</span></div>
+    <div>Volume: <span id="volume">-</span></div>
+    <script>
+        const socket = new WebSocket('ws://' + location.host);
+
+        socket.onmessage = function(event) {
+            const stockData = JSON.parse(event.data);
+            document.getElementById('open').innerText = stockData.open;
+            document.getElementById('low').innerText = stockData.low;
+            document.getElementById('high').innerText = stockData.high;
+            document.getElementById('close').innerText = stockData.close;
+            document.getElementById('volume').innerText = stockData.volume;
+        };
+    </script>
+</body>
+</html>
