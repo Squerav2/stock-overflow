@@ -23,7 +23,20 @@ const addStockToWatchlist = async (req, res) => {
   }
 };
 
+const deleteStockFromWatchlist = async (req, res) => {
+  const { symbol } = req.params;
+
+  try {
+    await watchlistService.deleteStockFromWatchlist(symbol);
+    res.json({ message: 'Stock deleted from watchlist' });
+  } catch (error) {
+    console.error('Error deleting stock from watchlist:', error.message);
+    res.status(500).json({ error: 'Failed to delete stock from watchlist' });
+  }
+};
+
 module.exports = {
   getWatchlist,
   addStockToWatchlist,
+  deleteStockFromWatchlist,
 };
