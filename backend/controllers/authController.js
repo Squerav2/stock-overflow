@@ -1,37 +1,95 @@
 // controllers/authController.js
-const authService = require('../services/authService');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../models/Users'); // Replace with the actual path to your User model
 
-const register = async (req, res) => {
-  const { username, password } = req.body;
+// Usually, you would obtain the secret from an environment variable for security
+const JWT_SECRET = process.env.JWT_SECRET || 'cfDdhZ43KIA5j74__6Im25IFNqhXPteQNpARxR4l5Mc=';
+const JWT_EXPIRES_IN = '1h';
 
+const registerUser = async (req, res) => {
   try {
-    await authService.registerUser(username, password);
-    res.json({ message: 'Registration successful' });
+    const { username, password, name, surname, email, phone } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the user record in the database
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+      name,
+      surname,
+      email,
+      phone
+    });
+
+    // Respond with success but do not log the user in automatically
+    // You might want to implement email verification first
+    return res.status(201).json({
+      message: 'User registered successfully',
+    });
   } catch (error) {
-    console.error('Error registering user:', error.message);
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Error registering the user:', error.message);
+    return res.status(500).json({
+      error: 'Registration failed',
+      message: error.message
+    });
   }
 };
 
-const login = async (req, res) => {
-  const { username, password } = req.body;
-
+const loginUser = async (req, res) => {
+  
   try {
-    const user = await authService.loginUser(username, password);
+    const { username, password } = req.body;
 
-    if (user) {
-      // You may generate and send a token here for authentication purposes
-      res.json({ message: 'Login successful' });
-    } else {
-      res.status(401).json({ error: 'Invalid username or password' });
+    // Check if the user exists
+        // Override the default scope to include the password
+        const user = await User.scope('withPassword').findOne({ where: { username } })
+        console.log("Received password:", password); // Log the received username
+        console.log("User's password:", user.password); // Log the received password
+    // console.log(user); // Check the retrieved user object
+
+    if (!user || !user.password) {
+      console.log("AAAAAAAA", password, "user.password", user.password)
+      return res.status(401).json({ error: 'Invalid username or password' });
+  }
+
+    if (!password || !user.password) {
+      console.log("password", password, "user.password", user.password)
+      return res.status(400).json({ error: 'Invalid request' });
+  }
+  
+    // Check if the password is correct
+    try {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
   } catch (error) {
+    console.error('Error during password comparison:', error);
+    return res.status(500).json({ error: 'An error occurred' });
+}
+    // Create a token
+    const token = jwt.sign(
+      { id: user.id },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    // Respond with token
+    return res.json({
+      message: 'Login successful',
+      token
+    });
+  } catch (error) {
     console.error('Error logging in:', error.message);
-    res.status(500).json({ error: 'Login failed' });
+    return res.status(500).json({
+      error: 'Login failed',
+      message: error.message
+    });
   }
 };
 
 module.exports = {
-  register,
-  login,
+  registerUser,
+  loginUser
 };
