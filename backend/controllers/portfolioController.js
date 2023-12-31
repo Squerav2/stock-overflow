@@ -1,6 +1,6 @@
 // backend/controllers/portfolioController.js
-const Portfolio = require('../models/Portfolio');
-const portfolioService = require('../services/portfolioService');
+const Portfolio = require("../models/Portfolio");
+const portfolioService = require("../services/portfolioService");
 
 const portfolioController = {
   createPortfolio: async (req, res) => {
@@ -12,7 +12,6 @@ const portfolioController = {
     }
   },
 
-
   getPortfolioByUserId: async (req, res) => {
     try {
       const user_id = req.params.user_id;
@@ -20,7 +19,9 @@ const portfolioController = {
       if (portfolio) {
         res.json(portfolio);
       } else {
-        res.status(404).json({ error: 'Portfolio not found for the given user' });
+        res
+          .status(404)
+          .json({ error: "Portfolio not found for the given user" });
       }
     } catch (error) {
       res.status(500).json({ error: error.message });

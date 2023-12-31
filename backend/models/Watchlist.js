@@ -1,26 +1,26 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const Watchlist = sequelize.define('Watchlist', {
+  const Watchlist = sequelize.define("Watchlist", {
     w_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     user_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Users', 
-        key: 'user_id'
-      }
+        model: "Users",
+        key: "user_id",
+      },
     },
     Stock_id: {
       type: DataTypes.STRING,
       references: {
-        model: 'Stock', 
-        key: 'symbol'
-      }
-    }
+        model: "Stock",
+        key: "symbol",
+      },
+    },
   });
 
   return Watchlist;

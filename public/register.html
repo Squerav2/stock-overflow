@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register</title>
+    <!-- Other head elements -->
+    <style>
+      .container {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Register</h1>
+    <form id="registerForm" class="container">
+      <div>Username: <input type="text" name="username" required /></div>
+      <div>Password: <input type="password" name="password" required /></div>
+      <div>Name: <input type="text" name="name" /></div>
+      <div>Surname: <input type="text" name="surname" /></div>
+      <div>Email: <input type="email" name="email" required /></div>
+      <div>Phone: <input type="text" name="phone" /></div>
+      <button type="submit">Register</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          const formData = new FormData(this);
+
+          fetch("/auth/register", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.text())
+            .then((text) => {
+              document.getElementById("message").innerText = text; // Display the response message
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              document.getElementById("message").innerText =
+                "An error occurred";
+            });
+        });
+    </script>
+  </body>
+</html>

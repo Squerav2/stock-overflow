@@ -1,5 +1,5 @@
 // services/watchlistService.js
-const watchlistModel = require('../models/Watchlist');
+const watchlistModel = require("../models/Watchlist");
 
 const getWatchlist = async () => {
   return watchlistModel.getWatchlist();
