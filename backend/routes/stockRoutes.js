@@ -1,9 +1,8 @@
 // routes/stockRoutes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const stockController = require('../controllers/stockController');
+const stockController = require("../controllers/stockController");
 
-// Define stock routes
-router.get('/:symbol', stockController.getStockInfo);
+router.post("/multiple", stockController.getMultipleStocksInfo);
 
 module.exports = router;

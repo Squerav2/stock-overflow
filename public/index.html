@@ -1,27 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Real-Time Stock Data</title>
     <!-- Other head elements -->
-</head>
-<body>
+  </head>
+  <body>
     <h1>Stock Data</h1>
-    <div>Open: <span id="open">-</span></div>
-    <div>Low: <span id="low">-</span></div>
-    <div>High: <span id="high">-</span></div>
-    <div>Close: <span id="close">-</span></div>
-    <div>Volume: <span id="volume">-</span></div>
-    <script>
-        const socket = new WebSocket('ws://' + location.host);
 
-        socket.onmessage = function(event) {
-            const stockData = JSON.parse(event.data);
-            document.getElementById('open').innerText = stockData.open;
-            document.getElementById('low').innerText = stockData.low;
-            document.getElementById('high').innerText = stockData.high;
-            document.getElementById('close').innerText = stockData.close;
-            document.getElementById('volume').innerText = stockData.volume;
-        };
+    <!-- Table for multiple stock data -->
+    <table id="stocks-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Open</th>
+          <th>Low</th>
+          <th>High</th>
+          <th>Close</th>
+          <th>Volume</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Stock data rows will be inserted here -->
+      </tbody>
+    </table>
+
+    <button id="loginBtn">Login</button>
+    <button id="registerBtn">Register</button>
+
+    <script>
+      document
+        .getElementById("loginBtn")
+        .addEventListener("click", function () {
+          window.location.href = "/login";
+        });
+
+      document
+        .getElementById("registerBtn")
+        .addEventListener("click", function () {
+          window.location.href = "/register";
+        });
+
+      // Function to fetch and display stocks
+      async function fetchAndDisplayStocks(symbols) {
+        try {
+          const response = await fetch("/stock/multiple", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ symbols }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const stocksData = await response.json();
+          updateStockTable(stocksData);
+        } catch (error) {
+          console.error("Failed to fetch stocks:", error);
+        }
+      }
+
+      // Function to update the stock table
+      function updateStockTable(stocksData) {
+        const tableBody = document
+          .getElementById("stocks-table")
+          .getElementsByTagName("tbody")[0];
+        tableBody.innerHTML = "";
+
+        stocksData.forEach((stock) => {
+          const row = tableBody.insertRow();
+          row.insertCell(0).innerText = stock.symbol;
+          row.insertCell(1).innerText = stock.open;
+          row.insertCell(2).innerText = stock.low;
+          row.insertCell(3).innerText = stock.high;
+          row.insertCell(4).innerText = stock.close;
+          row.insertCell(5).innerText = stock.volume;
+        });
+      }
+
+      // Call the function to fetch and display stocks when the page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchAndDisplayStocks([
+          "AAPL",
+          "GOOGL",
+          "MSFT" /* ...other symbols... */,
+        ]);
+      });
     </script>
-</body>
+  </body>
 </html>
