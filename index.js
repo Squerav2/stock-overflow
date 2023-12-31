@@ -1,7 +1,8 @@
 require('dotenv').config();
 const { getStockData } = require('./backend/services/stockService');
-const { getUserbyId } = require('./backend/services/userService');
+const {getUserbyId} = require("./backend/services/userService")
 
+const {getPortfolioByUserId} = require("./backend/services/portfolioService")
 const express = require('express');
 
 const path = require('path');
@@ -104,7 +105,7 @@ sequelize.sync();
 
 // Routes
 const authRoutes = require('./backend/routes/authRoutes');
-const portfolioRoutes = require('./backend/routes/portfolioRoutes');
+const portfolioRouter = require('./backend/routes/portfolioRoutes');
 const stockRoutes = require('./backend/routes/stockRoutes');
 const watchlistRoutes = require('./backend/routes/watchlistRoutes');
 
@@ -117,9 +118,16 @@ const watchlistRoutes = require('./backend/routes/watchlistRoutes');
 //         console.error("Error fetching user:", error);
 //     });
 
+// getPortfolioByUserId(1)
+// .then(portfolio => {
+//   console.log("portfolio", portfolio);
+// }
+//   )
+  
+
 // Use routes
 app.use('/auth', authRoutes);
-app.use('/portfolio', portfolioRoutes);
+app.use('/portfolio', portfolioRouter);
 app.use('/stock', stockRoutes);
 app.use('/watchlist', watchlistRoutes);
 // Test the connection

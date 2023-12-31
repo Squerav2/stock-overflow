@@ -1,13 +1,12 @@
 // backend/services/portfolioService.js
-
-const portfolioModel = require('../models/Portfolio');
+const Portfolio = require('../models/Portfolio');
 const axios = require('axios');
-
-
 const YAHOO_API_BASE_URL = 'https://query1.finance.yahoo.com/v8/finance/chart';
 
+const portfolioService = {
+
 // Function to get the current price from Yahoo Finance API
-const getCurrentPrice = async (symbol) => {
+ getCurrentPrice: async (symbol) => {
   try {
     const response = await axios.get(`${YAHOO_API_BASE_URL}/${symbol}?region=US&lang=en-US&includePrePost=false&interval=2m&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance`);
     const currentPrice = response.data.chart.result[0].meta.regularMarketPrice;
@@ -16,10 +15,10 @@ const getCurrentPrice = async (symbol) => {
     console.error(`Error fetching current price for ${symbol}:`, error.message);
     throw error;
   }
-};
+},
 
 // Function to calculate the profit and loss
-const calculateProfitAndLoss = async (userId) => {
+ calculateProfitAndLoss: async (userId) => {
   // Query to get the user's purchased stocks
   const userStocksQuery = 'SELECT stock_symbol, purchase_price, quantity FROM user_stocks WHERE user_id = $1';
   try {
@@ -49,28 +48,24 @@ const calculateProfitAndLoss = async (userId) => {
     console.error('Error calculating profit and loss:', error.message);
     throw error;
   }
-};
-const getPortfolio = async () => {
-  return portfolioModel.getPortfolio();
-};
-
-const addToPortfolio = async (symbol, companyName, quantity, purchasePrice) => {
-  return portfolioModel.addToPortfolio(symbol, companyName, quantity, purchasePrice);
-};
-
-// add updateStockInPortfolio function
-const updateStockInPortfolio = async (symbol, companyName, quantity, purchasePrice) => {
-  return portfolioModel.updateStockInPortfolio(symbol, companyName, quantity, purchasePrice);
-};
-// add deleteStockFromPortfolio function
-const deleteStockFromPortfolio = async (symbol) => {
-  return portfolioModel.deleteStockFromPortfolio(symbol);
+},
+// Function to get portfolio by user_id
+ getPortfolioByUserId: async (userId) => {
+  try {
+    const portfolio = await Portfolio.findOne({
+      where: { user_id: userId }
+    });
+    return portfolio;
+  } catch (error) {
+    console.error(`Error fetching portfolio for user_id ${userId}:`, error.message);
+    throw error;
+  }
+}
 };
 
 module.exports = {
-    getPortfolio,
-    addToPortfolio,
-    updateStockInPortfolio,
-    deleteStockFromPortfolio,
-    calculateProfitAndLoss,
+  portfolioService,
+  getCurrentPrice: portfolioService.getCurrentPrice,
+  calculateProfitAndLoss: portfolioService.calculateProfitAndLoss,
+  getPortfolioByUserId: portfolioService.getPortfolioByUserId
 };

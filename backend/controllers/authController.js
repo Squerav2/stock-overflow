@@ -15,11 +15,12 @@ const registerUser = async (req, res) => {
     // Create the user record in the database
     const newUser = await User.create({
       username,
-      password: hashedPassword,
       name,
       surname,
       email,
-      phone
+      phone,
+      password: hashedPassword, // Store the hashed password, not the plaintext password
+      verified: false
     });
 
     // Respond with success but do not log the user in automatically
@@ -44,8 +45,7 @@ const loginUser = async (req, res) => {
     // Check if the user exists
         // Override the default scope to include the password
         const user = await User.scope('withPassword').findOne({ where: { username } })
-        console.log("Received password:", password); // Log the received username
-        console.log("User's password:", user.password); // Log the received password
+
     // console.log(user); // Check the retrieved user object
 
     if (!user || !user.password) {
@@ -62,6 +62,8 @@ const loginUser = async (req, res) => {
     try {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log("Received password:", password); // Log the received username
+      console.log("User's password:", user.password); // Log the received password
       return res.status(401).json({ error: 'Invalid username or password' });
     }
   } catch (error) {

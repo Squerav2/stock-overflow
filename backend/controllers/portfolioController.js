@@ -1,54 +1,31 @@
-// controllers/portfolioController.js
+// backend/controllers/portfolioController.js
+const Portfolio = require('../models/Portfolio');
 const portfolioService = require('../services/portfolioService');
 
-const getPortfolio = async (req, res) => {
-  try {
-    const portfolio = await portfolioService.getPortfolio();
-    res.json({ portfolio });
-  } catch (error) {
-    console.error('Error getting portfolio:', error.message);
-    res.status(500).json({ error: 'Failed to get portfolio' });
-  }
+const portfolioController = {
+  createPortfolio: async (req, res) => {
+    try {
+      const portfolio = await Portfolio.create(req.body);
+      res.status(201).json(portfolio);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+
+  getPortfolioByUserId: async (req, res) => {
+    try {
+      const user_id = req.params.user_id;
+      const portfolio = await portfolioService.getPortfolioByUserId(user_id);
+      if (portfolio) {
+        res.json(portfolio);
+      } else {
+        res.status(404).json({ error: 'Portfolio not found for the given user' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
 
-const addStockToPortfolio = async (req, res) => {
-  const { symbol, companyName, quantity, purchasePrice } = req.body;
-
-  try {
-    await portfolioService.addToPortfolio(symbol, companyName, quantity, purchasePrice);
-    res.json({ message: 'Stock added to portfolio' });
-  } catch (error) {
-    console.error('Error adding stock to portfolio:', error.message);
-    res.status(500).json({ error: 'Failed to add stock to portfolio' });
-  }
-};
-//add updateStockInPortfolio function
-const updateStockInPortfolio = async (req, res) => {
-  const { symbol, companyName, quantity, purchasePrice } = req.body;
-
-  try {
-    await portfolioService.updateStockInPortfolio(symbol, companyName, quantity, purchasePrice);
-    res.json({ message: 'Stock updated in portfolio' });
-  } catch (error) {
-    console.error('Error updating stock in portfolio:', error.message);
-    res.status(500).json({ error: 'Failed to update stock in portfolio' });
-  }
-};
-// add deleteStockFromPortfolio function
-const deleteStockFromPortfolio = async (req, res) => {
-  const { symbol } = req.body;
-
-  try {
-    await portfolioService.deleteStockFromPortfolio(symbol);
-    res.json({ message: 'Stock deleted from portfolio' });
-  } catch (error) {
-    console.error('Error deleting stock from portfolio:', error.message);
-    res.status(500).json({ error: 'Failed to delete stock from portfolio' });
-  }
-};
-module.exports = {
-    getPortfolio,
-    addStockToPortfolio,
-    updateStockInPortfolio,
-    deleteStockFromPortfolio,
-};
+module.exports = portfolioController;
