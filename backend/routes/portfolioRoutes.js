@@ -1,19 +1,13 @@
 // backend/routes/watchlistRoutes.js
 // routes/portfolioRoutes.js
 const express = require('express');
-const router = express.Router();
+const portfolioRouter = express.Router();
 const portfolioController = require('../controllers/portfolioController');
 
+// Define the route for creating a portfolio
+portfolioRouter.post('/create', portfolioController.createPortfolio);
 
-// Add a stock to the portfolio
-router.post('/add', portfolioController.addStockToPortfolio);
-// Get the portfolio
-router.get('/', portfolioController.getPortfolio);
+// Define the route for getting a portfolio by ID
+portfolioRouter.get('/user/:user_id', portfolioController.getPortfolioByUserId);
 
-// Update a stock in the portfolio
-router.put('/update', portfolioController.updateStockInPortfolio);
-
-// Delete a stock from the portfolio
-router.delete('/delete', portfolioController.deleteStockFromPortfolio);
-
-module.exports = router;
+module.exports = portfolioRouter;
