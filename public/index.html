@@ -40,28 +40,6 @@
           window.location.href = "/register";
         });
 
-      // Function to fetch and display stocks
-      async function fetchAndDisplayStocks(symbols) {
-        try {
-          const response = await fetch("/stock/multiple", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ symbols }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-
-          const stocksData = await response.json();
-          updateStockTable(stocksData);
-        } catch (error) {
-          console.error("Failed to fetch stocks:", error);
-        }
-      }
-
       // Function to update the stock table
       function updateStockTable(stocksData) {
         const tableBody = document
@@ -80,14 +58,19 @@
         });
       }
 
-      // Call the function to fetch and display stocks when the page loads
-      document.addEventListener("DOMContentLoaded", () => {
-        fetchAndDisplayStocks([
-          "AAPL",
-          "GOOGL",
-          "MSFT" /* ...other symbols... */,
-        ]);
-      });
+      // Establish WebSocket connection and listen for messages
+      const socket = new WebSocket("ws://" + location.host);
+
+      socket.onmessage = function (event) {
+        const stocksData = JSON.parse(event.data);
+        updateStockTable(stocksData);
+      };
+
+      socket.onerror = function (error) {
+        console.error("WebSocket Error:", error);
+      };
+
+      // The fetchAndDisplayStocks function and the DOMContentLoaded event listener are no longer needed
     </script>
   </body>
 </html>
