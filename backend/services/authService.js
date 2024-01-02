@@ -11,10 +11,18 @@ const authService = {
     try {
       const { username, password, name, surname, email, phone } = userData;
 
-      // Check if user already exists
-      const existingUser = await User.findOne({ where: { username } });
-      if (existingUser) {
+      // Check if user already exists with this username
+      const existingUserByUsername = await User.findOne({
+        where: { username },
+      });
+      if (existingUserByUsername) {
         throw new Error("User already exists with this username");
+      }
+
+      // Check if user already exists with this email
+      const existingUserByEmail = await User.findOne({ where: { email } });
+      if (existingUserByEmail) {
+        throw new Error("User already exists with this email");
       }
 
       // Hash the password

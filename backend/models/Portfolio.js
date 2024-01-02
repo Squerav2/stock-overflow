@@ -40,7 +40,6 @@ Portfolio.init(
         min: 0.0, // assuming price cannot be negative
       },
     },
-    // You can add additional fields here if needed
   },
   {
     // Model options go here

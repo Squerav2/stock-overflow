@@ -11,6 +11,7 @@ const JWT_EXPIRES_IN = "1h";
 
 const authController = {
   registerUser: async (req, res) => {
+    console.log("req_body:", req.body);
     try {
       // This will call the registerUser function from authService.js
       const userWithoutPassword = await authService.registerUser(req.body);

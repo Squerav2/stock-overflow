@@ -6,6 +6,25 @@ const YAHOO_API_MODULE_PATH = "?module=history";
 const YAHOO_API_REGION = "&region=TR";
 const YAHOO_API_INTERVAL = "&interval=1m";
 
+const Stock = require("../models/Stock");
+
+const searchStocks = async (searchTerm) => {
+  try {
+    const results = await Stock.findAll({
+      where: {
+        symbol: {
+          [Sequelize.Op.iLike]: `${searchTerm}%`, // Case-insensitive 'like' search
+        },
+      },
+      limit: 5, // Limit the results to 5 items or however many you prefer
+    });
+    return results.map((stock) => stock.dataValues); // Return a simple array of objects
+  } catch (error) {
+    console.error("Error during stock search:", error);
+    throw error; // Rethrow the error and let the calling function handle it
+  }
+};
+
 const getStockData = async (symbol) => {
   try {
     const response = await axios.get(
@@ -68,4 +87,5 @@ module.exports = {
   getLatestStockData,
   getMultipleStockData,
   formatStockData,
+  searchStocks,
 };

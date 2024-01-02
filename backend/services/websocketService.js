@@ -1,38 +1,40 @@
 const WebSocket = require("ws");
 const stockService = require("./stockService");
+const Sequelize = require("sequelize"); // Make sure Sequelize is installed and imported
 
 const initializeWebSocket = (server) => {
   const wss = new WebSocket.Server({ server });
 
-  const sendMultipleStockData = async () => {
-    // Define the symbols you want to fetch here or get them from somewhere else
-    const symbols = ["BTC-USD", "ETH-USD", "DOGE-USD"];
-    try {
-      const stockData = await stockService.getMultipleStockData(symbols);
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(stockData));
-        }
-      });
-    } catch (error) {
-      console.error(
-        "Error fetching/sending multiple stock data:",
-        error.message,
-      );
-    }
-  };
-
-  // Fetch and send stock data immediately when the server starts
-  sendMultipleStockData();
-
-  // Set up an interval to fetch and send stock data every 10 seconds
-  setInterval(sendMultipleStockData, 10000);
-
   wss.on("connection", (socket) => {
     console.log("Client connected");
 
-    // If you want to send data immediately when a new client connects
-    sendMultipleStockData();
+    socket.on("message", async (message) => {
+      try {
+        // Parse the incoming message to determine the type of request
+        const request = JSON.parse(message);
+
+        if (request.type === "getSingleStock") {
+          const stockData = await stockService.getStockData(request.symbol);
+          socket.send(JSON.stringify({ type: "stockData", data: stockData })); // Send back to the requesting client
+        } else if (request.type === "getMultipleStocks") {
+          const stocksData = await stockService.getMultipleStockData(
+            request.symbols,
+          );
+          socket.send(JSON.stringify({ type: "stocksData", data: stocksData })); // Send back to the requesting client
+        } else if (request.type === "searchStocks") {
+          // Implement the search functionality
+          const searchResults = await stockService.searchStocks(
+            request.searchTerm,
+          );
+          socket.send(
+            JSON.stringify({ type: "searchResults", results: searchResults }),
+          ); // Send back to the requesting client
+        }
+      } catch (error) {
+        console.error("Error handling message:", error.message);
+        socket.send(JSON.stringify({ error: "Error processing your request" }));
+      }
+    });
 
     socket.on("close", () => {
       console.log("Client disconnected");

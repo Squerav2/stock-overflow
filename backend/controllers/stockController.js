@@ -1,6 +1,27 @@
 // controllers/stockController.js
 const stockService = require("../services/stockService");
+const Stock = require("../models/Stock"); // Import the Stock model
 
+const searchStocks = async (req, res) => {
+  const searchTerm = req.query.term; // Get the search term from query params
+
+  try {
+    const results = await Stock.findAll({
+      where: {
+        symbol: {
+          [Sequelize.Op.like]: `${searchTerm.toUpperCase()}%`, // Search for stocks that start with the search term
+        },
+      },
+      limit: 10, // Limit the results to 10 items (optional)
+    });
+
+    // Send the results back to the client
+    res.json(results);
+  } catch (error) {
+    console.error("Error during stock search:", error.message);
+    res.status(500).json({ error: "Error searching for stocks" });
+  }
+};
 const getStockInfo = async (req, res) => {
   const { symbol } = req.params;
 
@@ -11,8 +32,6 @@ const getStockInfo = async (req, res) => {
     res.status(500).json({ error: "Error fetching stock data" });
   }
 };
-
-// controllers/stockController.js
 
 const getMultipleStocksInfo = async (req, res) => {
   try {
@@ -27,9 +46,5 @@ const getMultipleStocksInfo = async (req, res) => {
 module.exports = {
   getStockInfo,
   getMultipleStocksInfo,
-};
-
-module.exports = {
-  getStockInfo,
-  getMultipleStocksInfo,
+  searchStocks,
 };

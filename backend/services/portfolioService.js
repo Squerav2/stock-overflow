@@ -1,4 +1,5 @@
 // backend/services/portfolioService.js
+const { getPortfolioByUserId } = require("../controllers/portfolioController");
 const Portfolio = require("../models/Portfolio");
 const axios = require("axios");
 const YAHOO_API_BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart";
@@ -59,18 +60,43 @@ const portfolioService = {
       throw error;
     }
   },
-  // Function to get portfolio by user_id
-  getPortfolioByUserId: async (userId) => {
+  // Function to get all portfolios by user_id
+
+  getPortfolioByUserId: async (user_id) => {
     try {
-      const portfolio = await Portfolio.findOne({
-        where: { user_id: userId },
+      const portfolio = await Portfolio.findAll({
+        where: { user_id },
       });
       return portfolio;
     } catch (error) {
       console.error(
-        `Error fetching portfolio for user_id ${userId}:`,
+        `Error getting portfolio for user ${user_id}:`,
         error.message,
       );
+      throw error;
+    }
+  },
+
+  // Function to update the portfolio
+  updatePortfolio: async (p_id, updatedPortfolio) => {
+    try {
+      const portfolio = await Portfolio.update(updatedPortfolio, {
+        where: { p_id },
+        returning: true,
+      });
+      return portfolio[1][0];
+    } catch (error) {
+      console.error(`Error updating portfolio ${p_id}:`, error.message);
+      throw error;
+    }
+  },
+
+  // Function to delete the portfolio
+  deletePortfolio: async (p_id) => {
+    try {
+      await Portfolio.destroy({ where: { p_id } });
+    } catch (error) {
+      console.error(`Error deleting portfolio ${p_id}:`, error.message);
       throw error;
     }
   },
@@ -81,4 +107,6 @@ module.exports = {
   getCurrentPrice: portfolioService.getCurrentPrice,
   calculateProfitAndLoss: portfolioService.calculateProfitAndLoss,
   getPortfolioByUserId: portfolioService.getPortfolioByUserId,
+  updatePortfolio: portfolioService.updatePortfolio,
+  deletePortfolio: portfolioService.deletePortfolio,
 };

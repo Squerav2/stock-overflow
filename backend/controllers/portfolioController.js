@@ -27,6 +27,29 @@ const portfolioController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  updatePortfolio: async (req, res) => {
+    try {
+      const p_id = req.params.p_id;
+      const updatedPortfolio = await portfolioService.updatePortfolio(
+        p_id,
+        req.body,
+      );
+      res.json(updatedPortfolio);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  deletePortfolio: async (req, res) => {
+    try {
+      const p_id = req.params.p_id;
+      await portfolioService.deletePortfolio(p_id);
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
 
 module.exports = portfolioController;
