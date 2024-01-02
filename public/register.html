@@ -30,14 +30,19 @@
           event.preventDefault(); // Prevent the default form submission
 
           const formData = new FormData(this);
+          const formProps = Object.fromEntries(formData);
 
           fetch("/auth/register", {
             method: "POST",
-            body: formData,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded", // Set content type to URL encoded
+            },
+            body: new URLSearchParams(formData).toString(), // Convert formData to URLSearchParams and then to string
           })
-            .then((response) => response.text())
-            .then((text) => {
-              document.getElementById("message").innerText = text; // Display the response message
+            .then((response) => response.json()) // Handle JSON response
+            .then((data) => {
+              document.getElementById("message").innerText =
+                data.message || JSON.stringify(data);
             })
             .catch((error) => {
               console.error("Error:", error);

@@ -1,42 +1,36 @@
 // controllers/watchlistController.js
 const watchlistService = require("../services/watchlistService");
 
-const getWatchlist = async (req, res) => {
-  try {
-    const watchlist = await watchlistService.getWatchlist();
-    res.json({ watchlist });
-  } catch (error) {
-    console.error("Error getting watchlist:", error.message);
-    res.status(500).json({ error: "Failed to get watchlist" });
-  }
+const watchlistController = {
+  getWatchlistByUserId: async (req, res) => {
+    try {
+      const user_id = req.params.user_id;
+      const watchlist = await watchlistService.getWatchlistByUserId(user_id);
+      res.json(watchlist);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  },
+
+  addToWatchlist: async (req, res) => {
+    try {
+      const { symbol, companyName } = req.body;
+      const stock = await watchlistService.addToWatchlist(symbol, companyName);
+      res.json(stock);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  },
+
+  deleteStockFromWatchlist: async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const stock = await watchlistService.deleteStockFromWatchlist(symbol);
+      res.json(stock);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  },
 };
 
-const addStockToWatchlist = async (req, res) => {
-  const { symbol, companyName } = req.body;
-
-  try {
-    await watchlistService.addToWatchlist(symbol, companyName);
-    res.json({ message: "Stock added to watchlist" });
-  } catch (error) {
-    console.error("Error adding stock to watchlist:", error.message);
-    res.status(500).json({ error: "Failed to add stock to watchlist" });
-  }
-};
-
-const deleteStockFromWatchlist = async (req, res) => {
-  const { symbol } = req.params;
-
-  try {
-    await watchlistService.deleteStockFromWatchlist(symbol);
-    res.json({ message: "Stock deleted from watchlist" });
-  } catch (error) {
-    console.error("Error deleting stock from watchlist:", error.message);
-    res.status(500).json({ error: "Failed to delete stock from watchlist" });
-  }
-};
-
-module.exports = {
-  getWatchlist,
-  addStockToWatchlist,
-  deleteStockFromWatchlist,
-};
+module.exports = watchlistController;

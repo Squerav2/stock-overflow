@@ -37,7 +37,7 @@ Users.init(
       type: DataTypes.STRING,
       validate: {
         isNumeric: true,
-        len: [7, 20], // Adjust the validation to match your requirements
+        len: [7, 20],
       },
     },
     password: {

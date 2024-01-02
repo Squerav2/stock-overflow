@@ -20,6 +20,7 @@ const websocketService = require("./backend/services/websocketService");
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json()); // This line is crucial for parsing JSON request bodies
+app.use(express.urlencoded({ extended: true })); // Add this line in index.js to parse URL encoded bodies
 
 // Route to serve the registration page
 app.get("/register", (req, res) => {

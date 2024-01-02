@@ -1,12 +1,10 @@
 // routes/watchlistRoutes.js
 const express = require("express");
-const router = express.Router();
 const watchlistController = require("../controllers/watchlistController");
+const router = express.Router();
 
-// Get the watchlist
-router.get("/", watchlistController.getWatchlist);
-
-// Add a stock to the watchlist
-router.post("/add", watchlistController.addStockToWatchlist);
+router.get("/:user_id", watchlistController.getWatchlistByUserId);
+router.post("/", watchlistController.addToWatchlist);
+router.delete("/:stock_id", watchlistController.deleteStockFromWatchlist);
 
 module.exports = router;

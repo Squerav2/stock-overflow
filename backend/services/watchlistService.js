@@ -1,15 +1,42 @@
 // services/watchlistService.js
-const watchlistModel = require("../models/Watchlist");
+const { get } = require("mongoose");
+const Watchlist = require("../models/Watchlist");
 
-const getWatchlist = async () => {
-  return watchlistModel.getWatchlist();
-};
+const watchlistService = {
+  // Function to get all stocks in the watchlist by user_id
+  getWatchlistByUserId: async (user_id) => {
+    try {
+      const watchlist = await Watchlist.findAll({
+        where: { user_id },
+      });
+      return watchlist;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 
-const addToWatchlist = async (symbol, companyName) => {
-  return watchlistModel.addToWatchlist(symbol, companyName);
+  addToWatchlist: async (symbol, companyName) => {
+    try {
+      const stock = await Watchlist.create({ symbol, companyName });
+      return stock;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  deleteStockFromWatchlist: async (symbol) => {
+    try {
+      const stock = await Watchlist.findOneAndDelete({ symbol });
+      return stock;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
 module.exports = {
-  getWatchlist,
-  addToWatchlist,
+  watchlistService,
+  getWatchlistByUserId: watchlistService.getWatchlistByUserId,
+  addToWatchlist: watchlistService.addToWatchlist,
+  deleteStockFromWatchlist: watchlistService.deleteStockFromWatchlist,
 };

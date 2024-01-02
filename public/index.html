@@ -61,6 +61,16 @@
       // Establish WebSocket connection and listen for messages
       const socket = new WebSocket("ws://" + location.host);
 
+      socket.onopen = function () {
+        // Send a message to the server to request multiple stocks data
+        socket.send(
+          JSON.stringify({
+            type: "getMultipleStocks",
+            symbols: ["BTC-USD", "DOGE-USD", "AVAX-USD"],
+          }),
+        );
+      };
+
       socket.onmessage = function (event) {
         const stocksData = JSON.parse(event.data);
         updateStockTable(stocksData);
@@ -69,8 +79,6 @@
       socket.onerror = function (error) {
         console.error("WebSocket Error:", error);
       };
-
-      // The fetchAndDisplayStocks function and the DOMContentLoaded event listener are no longer needed
     </script>
   </body>
 </html>

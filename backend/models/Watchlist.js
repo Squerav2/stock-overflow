@@ -1,7 +1,12 @@
-const { DataTypes } = require("sequelize");
+// models/Watchlist.js
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("../../database"); // Adjust the import path to where your Sequelize instance is configured.
 
-module.exports = (sequelize) => {
-  const Watchlist = sequelize.define("Watchlist", {
+class Watchlist extends Model {}
+
+Watchlist.init(
+  {
+    // Define the model attributes here
     w_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -9,19 +14,21 @@ module.exports = (sequelize) => {
     },
     user_id: {
       type: DataTypes.INTEGER,
-      references: {
-        model: "Users",
-        key: "user_id",
-      },
+      allowNull: false,
     },
-    Stock_id: {
+    stock_id: {
       type: DataTypes.STRING,
-      references: {
-        model: "Stock",
-        key: "symbol",
-      },
+      allowNull: false,
     },
-  });
+  },
+  {
+    // Model options go here
+    sequelize, // Pass the connection instance
+    modelName: "Watchlist", // Choose the model name
+    timestamps: false, // Set to true to handle createdAt and updatedAt by Sequelize
+    tableName: "watchlist", // Specify the table name if different from model name
+    // Define scopes and defaultScope if needed
+  },
+);
 
-  return Watchlist;
-};
+module.exports = Watchlist; // Export the model
