@@ -12,16 +12,18 @@ const Sequelize = require("sequelize");
 const stockService = {
   getStockData: async (symbol) => {
     try {
-      const response = await axios.get(
-        `${YAHOO_API_BASE_URL}/${symbol}${YAHOO_API_MODULE_PATH}${YAHOO_API_REGION}${YAHOO_API_INTERVAL}`,
-      );
-
+      const url = `${YAHOO_API_BASE_URL}/${symbol}${YAHOO_API_MODULE_PATH}${YAHOO_API_REGION}${YAHOO_API_INTERVAL}`;
+      const response = await axios.get(url);
       return response.data;
     } catch (error) {
-      console.error("Error fetching stock data:", error.message);
+      console.error(
+        "Error fetching stock data for symbol " + symbol + ":",
+        error.response ? error.response.data : error.message,
+      );
       throw error;
     }
   },
+
   getLatestStockData: async () => {
     try {
       const stockData = await stockService.getStockData("BTC-USD");
@@ -117,7 +119,7 @@ module.exports = {
   getAllStocks: stockService.getAllStocks,
   getStockInfo: stockService.getStockInfo,
   searchStocks: stockService.searchStocks,
-  getMultipleStocksData: stockService.getMultipleStockData,
+  getMultipleStockData: stockService.getMultipleStockData,
   getLatestStockData: stockService.getLatestStockData,
   getStockData: stockService.getStockData,
   formatStockData: stockService.formatStockData,
