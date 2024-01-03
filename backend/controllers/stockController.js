@@ -33,6 +33,15 @@ const getStockInfo = async (req, res) => {
   }
 };
 
+const getAllStocks = async (req, res) => {
+  try {
+    const stocks = await stockService.getAllStocks();
+    res.json(stocks);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching all stocks" });
+  }
+};
+
 const getMultipleStocksInfo = async (req, res) => {
   try {
     const symbols = req.body.symbols; // Assuming symbols are sent in request body
@@ -43,8 +52,19 @@ const getMultipleStocksInfo = async (req, res) => {
   }
 };
 
+const getAllStockSymbols = async (req, res) => {
+  try {
+    const stocks = await stockService.getAllStockSymbols();
+    res.json(stocks);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching all stocks" });
+  }
+};
+
 module.exports = {
   getStockInfo,
   getMultipleStocksInfo,
   searchStocks,
+  getAllStockSymbols,
+  getAllStocks,
 };

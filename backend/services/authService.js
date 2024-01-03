@@ -25,6 +25,12 @@ const authService = {
         throw new Error("User already exists with this email");
       }
 
+      // Check if user already exists with this phone
+      const existingUserByPhone = await User.findOne({ where: { phone } });
+      if (existingUserByPhone) {
+        throw new Error("User already exists with this phone");
+      }
+
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 

@@ -29,6 +29,9 @@ const initializeWebSocket = (server) => {
           socket.send(
             JSON.stringify({ type: "searchResults", results: searchResults }),
           ); // Send back to the requesting client
+        } else if (request.type === "getAllStocksData") {
+          // New implementation for getting all stocks data
+          await getAllStocksData(socket);
         }
       } catch (error) {
         console.error("Error handling message:", error.message);
@@ -41,5 +44,18 @@ const initializeWebSocket = (server) => {
     });
   });
 };
+// Function to get all stocks data
+async function getAllStocksData(socket) {
+  try {
+    const allStockSymbols = await stockService.getAllStockSymbols();
+    const symbols = allStockSymbols.map((stock) => stock.symbol);
+
+    const allStocksData = await stockService.getMultipleStockData(symbols);
+    socket.send(JSON.stringify({ type: "allStocksData", data: allStocksData }));
+  } catch (error) {
+    console.error("Error in getAllStocksData:", error.message);
+    socket.send(JSON.stringify({ error: "Error fetching all stocks data" }));
+  }
+}
 
 module.exports = { initializeWebSocket };
