@@ -17,10 +17,17 @@ const initializeWebSocket = (server) => {
           const stockData = await stockService.getStockData(request.symbol);
           socket.send(JSON.stringify({ type: "stockData", data: stockData })); // Send back to the requesting client
         } else if (request.type === "getMultipleStocks") {
-          const stocksData = await stockService.getMultipleStockData(
-            request.symbols,
-          );
-          socket.send(JSON.stringify({ type: "stocksData", data: stocksData })); // Send back to the requesting client
+          let stocksData;
+          if (request.symbols && request.symbols.length > 0) {
+            stocksData = await stockService.getMultipleStockData(
+              request.symbols,
+            );
+          } else {
+            const allStockSymbols = await stockService.getAllStockSymbols();
+            const symbols = allStockSymbols.map((stock) => stock.symbol);
+            stocksData = await stockService.getMultipleStockData(symbols);
+          }
+          socket.send(JSON.stringify({ type: "stocksData", data: stocksData }));
         } else if (request.type === "searchStocks") {
           // Implement the search functionality
           const searchResults = await stockService.searchStocks(

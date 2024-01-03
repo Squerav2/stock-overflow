@@ -42,7 +42,7 @@ const getAllStocks = async (req, res) => {
   }
 };
 
-const getMultipleStocksInfo = async (req, res) => {
+const getMultipleStockData = async (req, res) => {
   try {
     const symbols = req.body.symbols; // Assuming symbols are sent in request body
     const stocksData = await stockService.getMultipleStockData(symbols);
@@ -63,7 +63,7 @@ const getAllStockSymbols = async (req, res) => {
 
 module.exports = {
   getStockInfo,
-  getMultipleStocksInfo,
+  getMultipleStockData,
   searchStocks,
   getAllStockSymbols,
   getAllStocks,
