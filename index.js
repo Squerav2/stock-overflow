@@ -12,10 +12,12 @@ const sequelize = require('./database'); // Adjust the path to where you have yo
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+const cors = require('cors');
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // This line is crucial for parsing JSON request bodies
+app.use(cors);
 const port = process.env.PORT || 3000;
 
 
