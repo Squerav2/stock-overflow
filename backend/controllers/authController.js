@@ -69,8 +69,10 @@ const authController = {
 
       // Respond with token
       return res.json({
-        message: "Login successful",
-        token,
+        email: user.email,
+        password: user.password,
+        name: user.name,
+        surname: user.surname,
       });
     } catch (error) {
       console.error("Error logging in:", error.message);
